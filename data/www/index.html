@@ -1,0 +1,131 @@
+<html lang="en">
+
+<head>
+    <title>Lora</title>
+    <style>
+        .content {
+            max-width: 500px;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <table style="width: 437px;">
+            <tbody>
+                <tr style="height: 130px;">
+                    <td style="width: 436px; height: 130px;">
+                        <img style="display: block; margin-left: auto; margin-right: auto;" controls="controls"
+                            width="256" height="128" src="logo">
+                    </td>
+                </tr>
+                <form action="/get">
+                    <tr style="height: 113.781px;">
+                        <td style="width: 436px; text-align: center; height: 113.781px;">
+                            <p id="id_">%id_%</p>
+                            <h4>&nbsp;<span
+                                    style="text-decoration: underline;"><strong>Habilitaci&oacute;n:</strong></span>
+                            </h4>
+                            <table style="height: 54px; width: 428.5px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 160px;">GPRS</td>
+                                        <td style="width: 251.5px; text-align: center;"><input id="cbox1"
+                                                type="checkbox" name="gprs" value="on" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 160px;">WiFi</td>
+                                        <td style="text-align: center; width: 251.5px;"><input id="cbox2"
+                                                type="checkbox" name="wifi" value="on" /></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr style="height: 208px;">
+                        <td style="width: 436px; height: 208px; text-align: center;">
+                            <h4><span style="text-decoration: underline;"><strong>Wifi:</strong></span></h4>
+                            <table style="height: 34px; width: 428.578px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 117px;">SSID:</td>
+                                        <td style="width: 293.578px;"><input id="ssid" maxlength="16" name="ssid"
+                                                required="" size="25" type="text" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 117px;">Password:</td>
+                                        <td style="width: 293.578px;"><input id="pass" maxlength="16" name="pass"
+                                                required="" size="25" type="password" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table style="height: 120px;" width="428">
+                                <tbody>
+                                    <input type="submit" value="Submit">
+                                    <tr>
+                                        <td style="width: 418px; text-align: center;">
+                                            <p id="w0">%W0%</p>
+                                            <p id="w1">%W1%</p>
+                                            <p id="w2">%W2%</p>
+                                            <p id="w3">%W3%</p>
+                                            <p id="w4">%W4%</p>
+                                            <p id="w5">%W5%</p>
+                                            <p id="w6">%W6%</p>
+                                            <p id="w6">%W7%</p>
+                                            <p id="w6">%W8%</p>
+                                            <p id="w6">%W9%</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </form>
+                <tr style="height: 133px;">
+                    <td style="width: 436px; height: 133px;">
+                        <h4 style="text-align: center;"><span
+                                style="text-decoration: underline;"><strong>Nodos:</strong></span>&nbsp;</h4>
+                        <table style="width: 433px;">
+                            <tbody>
+                                <tr style="height: 73px;">
+                                    <p id="nodos">%NODOS%</p>
+                                    <td style="width: 433px; height: 73px;">&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+<script>
+    setInterval(function () {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var a = this.responseText.split(';');
+
+                document.getElementById("id_").innerHTML = a[0];
+                document.getElementById("nodos").innerHTML = a[1];
+                document.getElementById("w0").innerHTML = a[2];
+                document.getElementById("w1").innerHTML = a[3];
+                document.getElementById("w2").innerHTML = a[4];
+                document.getElementById("w3").innerHTML = a[6];
+                document.getElementById("w4").innerHTML = a[7];
+                document.getElementById("w5").innerHTML = a[8];
+                document.getElementById("w6").innerHTML = a[9];
+                document.getElementById("w7").innerHTML = a[10];
+                document.getElementById("w8").innerHTML = a[11];
+                document.getElementById("w9").innerHTML = a[12];
+            }
+        };
+        xhttp.open("GET", "/allvalues", true);
+        xhttp.send();
+    }, 50);
+</script>
+
+</html>
