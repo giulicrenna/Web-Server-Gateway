@@ -1,14 +1,23 @@
+#include <iostream>
+#include <vector>
+
 const char *ssid = "Darkflow-Lora";
 const char *password = NULL;
 
-typedef enum {
-    ESP_AS_AP,
+int lastTimeRead = 0;
+
+typedef enum
+{
+    NONE,
     START_STA,
     START_INTERPRETATOR_LOCAL_SERVER,
     START_INTERPRETATOR
-}States;
+} States;
 
-States currentState = ESP_AS_AP;
+States currentState = START_STA;
+
+std::vector<std::string> messages;
+std::vector<std::string> topics;
 
 IPAddress local_ip(192, 168, 0, 1);
 IPAddress gateway(192, 168, 0, 1);
@@ -20,6 +29,7 @@ struct
     String l1 = "default";
     String l2 = "default";
     String l3 = "default";
+    String nodes = "default";
 } input;
 
 struct

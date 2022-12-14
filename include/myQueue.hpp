@@ -1,3 +1,5 @@
+#ifndef MYQUEUE_H
+#define MYQUEUE_H
 #include <iostream>
 #include <vector>
 
@@ -90,3 +92,5 @@ public:
 
 //     return 0;
 // }
+
+#endif
