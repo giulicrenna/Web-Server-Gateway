@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 
 const char *ssid = "Darkflow-Lora";

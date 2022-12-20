@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <myMqtt.hpp>
-#include <strip.h>
 
 class Interpretator
 {
@@ -24,7 +23,7 @@ public:
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
         String str = Serial2.readStringUntil('\n');
-        std::vector<std::string> cmd_v = strip(str.c_str(), '\t');
+        std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
         for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());}
 

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <string.h>
 #include <global.hpp>
+#include <mStandars.h>
 #include "wifi.hpp"
 #include "interpreteSerial.hpp"
 // 15681544

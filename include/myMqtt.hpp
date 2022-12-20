@@ -3,13 +3,12 @@
 #include <ArduinoMqttClient.h>
 #include <WiFiClient.h>
 #include <string.h>
-#include "myQueue.hpp"
-//#include "global.hpp"
+//#include <mStand
 
 WiFiClient client_;
 MqttClient mqttClient(client_);
-CircleDataSet myMessages_(5);
-CircleDataSet topics_(5);
+mStructures::mQueue myMessages_(5);
+mStructures::mQueue topics_(5);
 
 /**
  * @brief This function handle the incomming messages from a particular topic
