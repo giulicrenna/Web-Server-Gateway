@@ -112,7 +112,7 @@ void setupWifiSta()
     if (WiFi.isConnected())
     {
         Serial.println("Device Connected to the network: " + WiFi.localIP().toString() + " is the current ip\n");
-        currentState = START_INTERPRETATOR_LOCAL_SERVER;
+        //currentState = START_INTERPRETATOR_LOCAL_SERVER;
     }
 }
 
@@ -130,6 +130,15 @@ bool loadData()
     config.wifi = myData.getString("wifi", "None");
     config.password = myData.getString("pass", "off");
     config.ssid = myData.getString("ssid", "off");
+
+    return true;
+}
+
+bool putData(){
+    myData.putString("gprs", config.gprs);
+    myData.putString("wifi", config.wifi);
+    myData.putString("pass", config.password);
+    myData.putString("ssid", config.ssid);
 
     return true;
 }

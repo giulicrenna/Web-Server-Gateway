@@ -3,10 +3,12 @@
 #include <ArduinoMqttClient.h>
 #include <WiFiClient.h>
 #include <string.h>
-//#include "global.hpp"
+//#include <mStand
 
 WiFiClient client_;
 MqttClient mqttClient(client_);
+mStructures::mQueue myMessages_(5);
+mStructures::mQueue topics_(5);
 
 /**
  * @brief This function handle the incomming messages from a particular topic
@@ -29,10 +31,14 @@ void onMqttMessage(int messageSize)
     {
         newContent += (char)mqttClient.read();
     }
+    topics = topics_.manageDataSet(mqttClient.messageTopic().c_str());
+    messages = myMessages_.manageDataSet(newContent.c_str());
 }
 
 int mqttSetup(const char *MQTT_SERVER, uint16_t MQTT_PORT, const char *PATH, const char *PATH_ALT = "")
 {
+    topics_.startDataSet();
+    myMessages_.startDataSet();
     if (!mqttClient.connect(MQTT_SERVER, MQTT_PORT))
     {
         return 1;
@@ -50,7 +56,7 @@ int mqttSubscribe()
 {
     mqttClient.setUsernamePassword("", "");
     mqttClient.setCleanSession(true);
-    if (mqttClient.subscribe("configTopic.c_str(), 2") == 0)
+    if (mqttClient.subscribe(mqttCredentials.subsTopic.c_str(), 2) == 0)
     {
         return 1;
     }
@@ -82,8 +88,8 @@ int mqttOnLoop(const char *MQTT_SERVER, uint16_t MQTT_PORT, const char *PATH, co
 
     if (!mqttClient.beginMessage(PATH))
     {
-        return 0;
         Serial1.println("(MQTT instance) could not publish into the topic");
+        return 0;
     }
     mqttClient.print(MESSAGE);
     mqttClient.endMessage();
