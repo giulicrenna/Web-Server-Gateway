@@ -7,8 +7,6 @@
 
 WiFiClient client_;
 MqttClient mqttClient(client_);
-mStructures::mQueue myMessages_(5);
-mStructures::mQueue topics_(5);
 
 /**
  * @brief This function handle the incomming messages from a particular topic
@@ -18,11 +16,13 @@ mStructures::mQueue topics_(5);
 void onMqttMessage(int messageSize)
 {
     // we received a message, print out the topic and contents
-    Serial1.print("Received a message with topic '");
-    Serial1.print(mqttClient.messageTopic());
-    Serial1.print("', length ");
-    Serial1.print(messageSize);
-    Serial1.println(" bytes:");
+    String topic = mqttClient.messageTopic();
+    #ifdef DEBUG
+    Serial.print("Received a message with topic '");
+    Serial.print(topic);
+    Serial.print("', length ");
+    Serial.println(messageSize + '\n');
+    #endif
 
     String newContent;
 
@@ -31,40 +31,43 @@ void onMqttMessage(int messageSize)
     {
         newContent += (char)mqttClient.read();
     }
-    topics = topics_.manageDataSet(mqttClient.messageTopic().c_str());
-    messages = myMessages_.manageDataSet(newContent.c_str());
+    topics_.manageDataSet(topic.c_str());
+    myMessages_.manageDataSet(newContent.c_str());
 }
 
-int mqttSetup(const char *MQTT_SERVER, uint16_t MQTT_PORT, const char *PATH, const char *PATH_ALT = "")
+int mqttSetup(const char *MQTT_SERVER, uint16_t MQTT_PORT)
 {
-    topics_.startDataSet();
-    myMessages_.startDataSet();
-    if (!mqttClient.connect(MQTT_SERVER, MQTT_PORT))
+    if (mqttClient.connect(MQTT_SERVER, MQTT_PORT))
     {
+        mqttClient.setId(mqttCredentials.clientID.c_str());
+        mqttClient.setUsernamePassword("", "");
+        mqttClient.setCleanSession(true);
+        mqttClient.onMessage(onMqttMessage);
+        #ifdef DEBUG
+        Serial.println("(MQTT instance) You're connected to the MQTT broker!");
+        #endif
         return 1;
     }
     else
     {
-        mqttClient.setId(mqttCredentials.clientID.c_str());
-        mqttClient.onMessage(onMqttMessage);
-        Serial1.println("(MQTT instance) You're connected to the MQTT broker!");
+        #ifdef DEBUG
+        Serial.println(std::to_string(mqttClient.connectError()).c_str());
+        #endif
         return 0;
     }
 }
 
 int mqttSubscribe()
 {
-    mqttClient.setUsernamePassword("", "");
-    mqttClient.setCleanSession(true);
-    if (mqttClient.subscribe(mqttCredentials.subsTopic.c_str(), 2) == 0)
-    {
-        return 1;
-    }
-    else
+    if (!mqttClient.subscribe(mqttCredentials.subsTopic.c_str(), 0))
     {
         return 0;
     }
-    return 2;
+    else
+    {
+        return 1;
+    }
+    return 0;
 }
 
 /**
@@ -78,23 +81,28 @@ int mqttSubscribe()
  * @param TOPIC System topic
  * @param MESSAGE Message to be sent
  */
-int mqttOnLoop(const char *MQTT_SERVER, uint16_t MQTT_PORT, const char *PATH, const char *MESSAGE = "")
+int mqttOnLoop(const char *PATH, const char *MESSAGE = "")
 {
     if (!mqttClient.connected())
     {
-        mqttClient.connect(MQTT_SERVER, MQTT_PORT);
+        mqttClient.connect(mqttCredentials.mqttBroker.c_str(), 1883);
     }
     mqttClient.poll();
 
     if (!mqttClient.beginMessage(PATH))
     {
-        Serial1.println("(MQTT instance) could not publish into the topic");
+        #ifdef DEBUG
+        Serial.println("(MQTT instance) could not publish into the topic");
+        #endif
         return 0;
+    }else{
+        #ifdef DEBUG
+        Serial.println("(MQTT instance) message sent succesfully");
+        #endif
+        mqttClient.print(MESSAGE);
+        mqttClient.endMessage();
+        return 1;
     }
-    mqttClient.print(MESSAGE);
-    mqttClient.endMessage();
-
-    return 1;
 }
 
 #endif

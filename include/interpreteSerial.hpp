@@ -23,14 +23,19 @@ public:
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
         String str = Serial2.readStringUntil('\n');
+
         std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
         for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());}
 
         if (cmd[0] != "")
         {
+            #ifdef DEBUG
+            Serial.println("############################");
             Serial.println(">" + cmd[0]);
             Serial.println(">" + cmd[1]);
+            Serial.println(">" + cmd[2]);
+            #endif
             if (cmd[0] == command0)
             {
                 if (WiFi.isConnected())
@@ -52,7 +57,7 @@ public:
             {
                 mqttCredentials.mqttBroker = cmd[1];
                 mqttCredentials.clientID = cmd[2];
-                if (mqttSetup(cmd[1].c_str(), 1883, "") == 1)
+                if (mqttSetup(cmd[1].c_str(), 1883) == 1)
                 {
                     send[0] = "1";
                 }
@@ -63,8 +68,8 @@ public:
             }
             if (cmd[0] == command2)
             {
-                int couldSubs;
-                couldSubs = mqttSubscribe();
+                mqttCredentials.subsTopic = cmd[1];
+                int couldSubs = mqttSubscribe();
                 if (couldSubs == 1)
                 {
                     send[0] = "1";
@@ -78,23 +83,37 @@ public:
             {
                 mqttCredentials.pubTopic = cmd[1];
                 String payload = cmd[2];
-                int result = mqttOnLoop(payload.c_str(),
-                                        1883,
-                                        mqttCredentials.pubTopic.c_str());
-                switch (result)
+                int result = mqttOnLoop(mqttCredentials.pubTopic.c_str(),
+                                        payload.c_str());
+                if (result == 1)
                 {
-                case 1:
                     send[0] = "1";
-                case 0:
+                }
+                else if (result == 0)
+                {
                     send[0] = "0";
                 }
             }
             if (cmd[0] == command4)
             {
-                for (int i = 0; i < 9; i += 2)
+                try
                 {
-                    send[i] = String(topics.at(i).c_str());
-                    send[i + 1] = String(messages.at(i).c_str());
+                    topics = topics_.giveDataSet();
+                    messages = myMessages_.giveDataSet();
+
+                    for (int i = 0; i < mQueueSize; i += 1)
+                    {
+                        String messagesStr = topics.at(i).c_str();
+                        messagesStr += ":";
+                        messagesStr += messages.at(i).c_str();
+                        send[i] = messagesStr;
+                    }
+                }
+                catch (...)
+                {
+#ifdef DEBUG
+                Serial.println("Could't open data set...");
+#endif
                 }
             }
             if (cmd[0] == command5)
@@ -102,13 +121,11 @@ public:
                 String data;
                 if (config.gprs == "on")
                 {
-                    data += "1";
-                    data += "/";
+                    data += "1/";
                 }
                 else
                 {
-                    data += "0";
-                    data += "/";
+                    data += "0/";
                 }
                 if (config.wifi == "on")
                 {
@@ -149,14 +166,12 @@ public:
                     putData();
                 }
             }
-            for (int i = 0; i < 10; i++)
-            {
-                if (send[i] != "")
-                {
+            if (send[0] != ""){
+                for (int i = 0; i < 10; i++){
                     Serial.print(send[i] + "\t");
                 }
+                Serial.print("\r\n");
             }
-            Serial.print("\r\n");
         }
     }
 

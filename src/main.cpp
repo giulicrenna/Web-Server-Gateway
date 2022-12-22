@@ -1,7 +1,8 @@
+#include <mStandars.h>
 #include <Arduino.h>
+#include <vector>
 #include <string.h>
 #include <global.hpp>
-#include <mStandars.h>
 #include "wifi.hpp"
 #include "interpreteSerial.hpp"
 // 15681544
@@ -26,6 +27,7 @@ void task2(void *param)
 
         case START_INTERPRETATOR:
         {
+            myInterprete.interpretateCommand();
         }
 
         default:
@@ -45,10 +47,13 @@ void task1(void *param)
         {
             setupWifiSta();
             bool status = WiFi.isConnected();
-            delay(3000);
             if (status)
             {
+                #ifdef DEBUG
                 Serial.println("Connection was successful...");
+                #endif
+                server.end();
+                server.reset();
                 currentState = START_INTERPRETATOR_LOCAL_SERVER;
                 break;
             }
@@ -56,6 +61,7 @@ void task1(void *param)
 
         case START_INTERPRETATOR_LOCAL_SERVER:
         {
+            
             myServer.setupLocalServer();
             currentState = START_INTERPRETATOR;
             break;
@@ -63,7 +69,8 @@ void task1(void *param)
 
         case START_INTERPRETATOR:
         {
-            myInterprete.interpretateCommand();
+            mqttClient.poll();
+            break;
         }
 
         default:
@@ -80,15 +87,15 @@ void setup()
     Serial2.setTimeout(2000);
     beginEEPROM();
     loadData();
-    setupWifiSta();
     bool status = WiFi.isConnected();
     delay(3000);
     if (!status)
     {
         myServer.setupApMode();
     }
+    #ifdef DEBUG
     Serial.println(config.ssid + ";" + config.password + ";" + config.gprs + ";" + config.wifi);
-
+    #endif
     xTaskCreatePinnedToCore(
         task1,
         "Task 1...",
@@ -105,6 +112,8 @@ void setup()
         1,
         NULL,
         1);
+    topics_.startDataSet();
+    myMessages_.startDataSet();
 }
 
 void loop() { delay(500000); }
