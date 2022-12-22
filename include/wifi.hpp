@@ -111,7 +111,9 @@ void setupWifiSta()
     delay(2500);
     if (WiFi.isConnected())
     {
+        #ifdef DEBUG
         Serial.println("Device Connected to the network: " + WiFi.localIP().toString() + " is the current ip\n");
+        #endif
         //currentState = START_INTERPRETATOR_LOCAL_SERVER;
     }
 }

@@ -1,9 +1,9 @@
-#include <vector>
-
+#define DEBUG
 const char *ssid = "Darkflow-Lora";
 const char *password = NULL;
 
 int lastTimeRead = 0;
+int mQueueSize = 5;
 
 typedef enum
 {
@@ -15,6 +15,8 @@ typedef enum
 
 States currentState = START_STA;
 
+mStructures::mQueue myMessages_(mQueueSize);
+mStructures::mQueue topics_(mQueueSize);
 std::vector<std::string> messages;
 std::vector<std::string> topics;
 
@@ -41,8 +43,8 @@ struct
 
 struct
 {
-    String mqttBroker;
+    String mqttBroker = "";
     String clientID;
-    String subsTopic;
+    String subsTopic = "testTopicAvoid/";
     String pubTopic;
 } mqttCredentials;
