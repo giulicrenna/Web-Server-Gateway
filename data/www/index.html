@@ -44,6 +44,13 @@
                             </table>
                         </td>
                     </tr>
+                    <tr>
+                        <td style="width: 436px; height: 75px; text-align: center;">
+                            <h4><span style="text-decoration: underline;text-align: center;"><strong>GPRS
+                                        state:</strong></span></h4>
+                            <p style="text-align: center;" id="l3">%l3%</p>
+                        </td>
+                    </tr>
                     <tr style="height: 208px;">
                         <td style="width: 436px; height: 208px; text-align: center;">
                             <h4><span style="text-decoration: underline;"><strong>Wifi:</strong></span></h4>
@@ -117,6 +124,7 @@
                 document.getElementById("w7").innerHTML = a[10];
                 document.getElementById("w8").innerHTML = a[11];
                 document.getElementById("w9").innerHTML = a[12];
+                document.getElementById("l3").innerHTML = a[13];
             }
         };
         xhttp.open("GET", "/allvalues", true);

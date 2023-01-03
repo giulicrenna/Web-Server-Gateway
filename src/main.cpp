@@ -2,14 +2,20 @@
 #include <Arduino.h>
 #include <vector>
 #include <string.h>
-#include <global.hpp>
+#include <IPAddress.h>
+#include <HardwareSerial.h>
+#include "global.hpp"
 #include "wifi.hpp"
 #include "interpreteSerial.hpp"
 // 15681544
-WiFiSetter myServer;
 Interpretator myInterprete;
+HardwareSerial debugSerial;
 
-void task2(void *param)
+void handleUART(){
+
+}
+
+void task2()
 {
     for (;;)
     {
@@ -17,52 +23,60 @@ void task2(void *param)
         {
         case START_STA:
         {
-            myInterprete.interpretateCommand();
+            myInterprete.interpretateCommandTask();
         }
 
         case START_INTERPRETATOR_LOCAL_SERVER:
         {
-            myInterprete.interpretateCommand();
+            myInterprete.interpretateCommandTask();
         }
 
         case START_INTERPRETATOR:
         {
-            myInterprete.interpretateCommand();
+            myInterprete.interpretateCommandTask();
         }
 
         default:
             break;
         }
-        vTaskDelay(100);
     }
 }
 
-void task1(void *param)
+void task1()
 {
     for (;;)
     {
+        myInterprete.interpretateCommandTask();
         switch (currentState)
         {
         case START_STA:
         {
-            setupWifiSta();
+            WiFiSetter::setupWifiSta();
             bool status = WiFi.isConnected();
+            delay(3000);
             if (status)
             {
                 #ifdef DEBUG
-                Serial.println("Connection was successful...");
+                Serial.println("[*] Killing AP");
                 #endif
                 server.end();
                 server.reset();
                 currentState = START_INTERPRETATOR_LOCAL_SERVER;
                 break;
+            }else{
+                currentState = START_AP;
+                break;
             }
+        }
+
+        case START_AP:
+        {
+            WiFiSetter::setupApMode();
         }
 
         case START_INTERPRETATOR_LOCAL_SERVER:
         {
-            
-            myServer.setupLocalServer();
+            WiFiSetter::setupLocalServer();
             currentState = START_INTERPRETATOR;
             break;
         }
@@ -76,44 +90,30 @@ void task1(void *param)
         default:
             break;
         }
-        vTaskDelay(100);
+
+        if(millis() - lastTimeCleanData_l4  > 5000){
+            input.l4 = "";
+        }
     }
 }
 
 void setup()
 {
     Serial.begin(115200);
-    Serial2.begin(115200);
-    Serial2.setTimeout(2000);
+    delay(100);
+    Serial1.begin(115200);
+    //Serial.onReceiveError(handleUART);
     beginEEPROM();
     loadData();
-    bool status = WiFi.isConnected();
-    delay(3000);
-    if (!status)
-    {
-        myServer.setupApMode();
-    }
     #ifdef DEBUG
     Serial.println(config.ssid + ";" + config.password + ";" + config.gprs + ";" + config.wifi);
     #endif
-    xTaskCreatePinnedToCore(
-        task1,
-        "Task 1...",
-        10000,
-        NULL,
-        1,
-        NULL,
-        0);
-    xTaskCreatePinnedToCore(
-        task2,
-        "Task 2...",
-        10000,
-        NULL,
-        1,
-        NULL,
-        1);
     topics_.startDataSet();
     myMessages_.startDataSet();
 }
 
-void loop() { delay(500000); }
+void loop() { 
+    task1();
+    task2();
+    delay(1);
+}
