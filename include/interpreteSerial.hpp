@@ -1,5 +1,9 @@
-#include <Arduino.h>
+#ifdef isESP8266
+#include <esp8266WiFi.h>
+#else
 #include <WiFi.h>
+#endif
+#include <Arduino.h>
 #include <myMqtt.hpp>
 
 class Interpretator
@@ -16,13 +20,18 @@ public:
     const char *command8 = "L3";
     const char *command9 = "N";
     const char *command10 = "C";
+    const char *command11 = "L4";
 
     // private:
-    void interpretateCommand()
+    virtual void interpretateCommandTask()
     {
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
-        String str = Serial2.readStringUntil('\n');
+        #ifdef DEBUG
+        String str = Serial1.readStringUntil('\n');
+        #else
+        String str = Serial.readStringUntil('\n');
+        #endif
 
         std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
@@ -31,7 +40,7 @@ public:
         if (cmd[0] != "")
         {
             #ifdef DEBUG
-            Serial.println("############################");
+            Serial.println("----------------<Incomming Command>----------------");
             Serial.println(">" + cmd[0]);
             Serial.println(">" + cmd[1]);
             Serial.println(">" + cmd[2]);
@@ -41,7 +50,7 @@ public:
                 if (WiFi.isConnected())
                 {
                     send[0] = String("1");
-                    send[1] = String(WiFi.localIP());
+                    send[1] = WiFi.localIP().toString();
                     send[2] = WiFi.SSID();
                     send[3] = String(giveRSSI());
                 }
@@ -57,7 +66,8 @@ public:
             {
                 mqttCredentials.mqttBroker = cmd[1];
                 mqttCredentials.clientID = cmd[2];
-                if (mqttSetup(cmd[1].c_str(), 1883) == 1)
+                mqttCredentials.port = std::stoi(cmd[3].c_str());
+                if (mqttSetup(cmd[1].c_str(), mqttCredentials.port) == 1)
                 {
                     send[0] = "1";
                 }
@@ -154,18 +164,26 @@ public:
             {
                 input.nodes = cmd[1];
             }
-            if (cmd[0] == command10)
+            if (cmd[0] == command10) 
             {
                 if (!WiFi.isConnected())
                 {
                     config.ssid = cmd[1];
                     config.password = cmd[2];
-
-                    setupWifiSta();
-
-                    putData();
+                    WiFiSetter::setupWifiSta();
+                    if(WiFi.isConnected()){
+                        currentState = START_INTERPRETATOR_LOCAL_SERVER;
+                        send[0] = "1";
+                        putData();
+                    }else{
+                        send[0] = "1";
+                    }
                 }
             }
+            if (cmd[0] == command11){
+                cmd[1] = input.l4;
+            }
+            
             if (send[0] != ""){
                 for (int i = 0; i < 10; i++){
                     Serial.print(send[i] + "\t");
@@ -177,6 +195,26 @@ public:
 
     int giveRSSI()
     {
-        return 0;
+        int signal = 0;
+        int rssi = WiFi.RSSI();
+        if((rssi >= -185) && (rssi <= -90)){
+            signal = 0.111 * rssi + 15;
+        }
+        if((rssi >= -89) && (rssi <= -80)){
+            signal = rssi + 95;
+        }
+        if((rssi >= -79) && (rssi <= -70)){
+            signal = 1.5 * rssi + 135;
+        }
+        if((rssi >= -69) && (rssi <= -50)){
+            signal = 2 * rssi + 170;
+        }
+        if((rssi >= -49) && (rssi <= -30)){
+            signal = 1.25 * rssi + 132.5;
+        }if((rssi >= -29) && (rssi <= -0)){
+            signal = 0.167 * rssi + 100;
+        }
+
+        return signal;
     }
 };

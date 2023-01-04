@@ -1,7 +1,12 @@
+#ifdef isESP8266
+#include <esp8266WiFi.h>
+#include <ESPAsyncTCP.h>
+#else
 #include <WiFi.h>
+#include <AsyncTCP.h>
+#endif
 #include <LittleFS.h>
 #include <ESPAsyncWebServer.h>
-#include <AsyncTCP.h>
 #include <Preferences.h>
 // #include "global.hpp"
 
@@ -12,12 +17,13 @@ void beginEEPROM();
 void setupWifiSta();
 bool loadData();
 String processor();
+String processorLocal();
 
 class WiFiSetter
 {
 protected:
 public:
-    void setupApMode()
+    static void setupApMode()
     {
 
         Serial.println("\n[*] Creating AP");
@@ -87,41 +93,78 @@ public:
 
             request->send(200, "text/html", "HTTP GET request sent to your ESP on input field (" 
                                             + inputParam + ") with value: " + inputMessage +
-                                            "<br><a href=\"/\">Return to Home Page</a>"); });
+                                            "<br><a href=\"/\">Return to Home Page</a>"); 
+            ESP.restart(); });
         server.begin();
     }
-    void setupLocalServer(){
+    static void setupLocalServer()
+    {
+#ifdef DEBUG
+        Serial.println("[*] Creating Local dashboard");
+#endif
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/wwwlocal/index.html", "text/html"); });
-
         server.on("/allvalues", HTTP_GET, [](AsyncWebServerRequest *request)
-                  { request->send(200, "application/json", processor()); });
+                  { request->send(200, "application/json", processorLocal()); });
 
-        //server.on("/logo", HTTP_GET, [](AsyncWebServerRequest *request)
-        //          { request->send(LittleFS, "/www/logo.png", "image/png"); });
-    
+        // server.on("/logo", HTTP_GET, [](AsyncWebServerRequest *request)
+        //           { request->send(LittleFS, "/www/logo.png", "image/png"); });
+
         server.begin();
     }
-};
 
-void setupWifiSta()
-{
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(config.ssid.c_str(), config.password.c_str());
-    delay(2500);
-    if (WiFi.isConnected())
+    static void setupWifiSta()
     {
-        #ifdef DEBUG
-        Serial.println("Device Connected to the network: " + WiFi.localIP().toString() + " is the current ip\n");
-        #endif
-        //currentState = START_INTERPRETATOR_LOCAL_SERVER;
+        if (config.ssid != "")
+        {
+            int lastTimeTimeOut = 0;
+#ifdef DEBUG
+            Serial.println(String(WiFi.getMode()));
+#endif
+            WiFi.mode(WIFI_STA);
+            WiFi.begin(config.ssid.c_str(), config.password.c_str());
+            delay(3000);
+
+            while (WiFi.status() != WL_CONNECTED)
+            {
+#ifdef DEBUG
+                Serial.print(".");
+#endif
+                delay(500);
+                if (millis() - lastTimeTimeOut > 10000)
+                {
+#ifdef DEBUG
+                    Serial.println("\nCould not connect to the WiFi network...\n");
+#endif
+                    break;
+
+                    lastTimeTimeOut = millis();
+                }
+            }
+            if (WiFi.status() == WL_CONNECTED)
+            {
+                Serial.print("\nDevice Connected to the network: " + WiFi.localIP().toString() + " is the current ip\n");
+            }
+        }
+        else
+        {
+            currentState = START_AP;
+        }
     }
-}
+};
 
 String processor()
 {
     String output = "";
-    output += input.l1 + ";" + input.l2 + ";" + input.WiFiScan[0] + ";" + input.WiFiScan[1] + ";" + input.WiFiScan[2] + ";" + input.WiFiScan[3] + ";" + input.WiFiScan[4] + ";" + input.WiFiScan[5] + ";" + input.WiFiScan[6] + ";" + input.WiFiScan[7] + ";" + input.WiFiScan[8] + ";" + input.WiFiScan[9];
+    output += input.l1 + ";" + input.l2 + ";" + input.WiFiScan[0] + ";" + input.WiFiScan[1] + ";" + input.WiFiScan[2] + ";" + input.WiFiScan[3] + ";" + input.WiFiScan[4] + ";" + input.WiFiScan[5] + ";" + input.WiFiScan[6] + ";" + input.WiFiScan[7] + ";" + input.WiFiScan[8] + ";" + input.WiFiScan[9] + ";" + input.l3;
+
+    return output;
+}
+
+String processorLocal()
+{
+    String output = "";
+    output += String(ESP.getCpuFreqMHz()) + ";" + String(ESP.getFreeHeap()) + ";" + String(ESP.getSdkVersion());
 
     return output;
 }
@@ -136,7 +179,8 @@ bool loadData()
     return true;
 }
 
-bool putData(){
+bool putData()
+{
     myData.putString("gprs", config.gprs);
     myData.putString("wifi", config.wifi);
     myData.putString("pass", config.password);
@@ -156,4 +200,5 @@ void beginEEPROM()
     {
         Serial.println("Filesystem mounted");
     }
+    // myData.clear();
 }

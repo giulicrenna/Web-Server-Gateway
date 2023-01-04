@@ -1,7 +1,9 @@
 #define DEBUG
+#define isESP8266
 const char *ssid = "Darkflow-Lora";
 const char *password = NULL;
 
+int lastTimeCleanData_l4 = 0;
 int lastTimeRead = 0;
 int mQueueSize = 5;
 
@@ -9,6 +11,7 @@ typedef enum
 {
     NONE,
     START_STA,
+    START_AP,
     START_INTERPRETATOR_LOCAL_SERVER,
     START_INTERPRETATOR
 } States;
@@ -30,13 +33,14 @@ struct
     String l1 = "default";
     String l2 = "default";
     String l3 = "default";
+    String l4 = "default";
     String nodes = "default";
 } input;
 
 struct
 {
-    String ssid;
-    String password;
+    String ssid = "";
+    String password = "";
     String gprs = "off";
     String wifi = "off";
 } config;
@@ -47,4 +51,5 @@ struct
     String clientID;
     String subsTopic = "testTopicAvoid/";
     String pubTopic;
+    int port;
 } mqttCredentials;
