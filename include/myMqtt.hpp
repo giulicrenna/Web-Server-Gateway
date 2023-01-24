@@ -35,9 +35,9 @@ void onMqttMessage(int messageSize)
     myMessages_.manageDataSet(newContent.c_str());
 }
 
-int mqttSetup(const char *MQTT_SERVER, uint16_t MQTT_PORT)
+int mqttSetup(String MQTT_SERVER, uint16_t MQTT_PORT)
 {
-    if (mqttClient.connect(MQTT_SERVER, MQTT_PORT))
+    if (mqttClient.connect(MQTT_SERVER.c_str(), MQTT_PORT))
     {
         mqttClient.setId(mqttCredentials.clientID.c_str());
         mqttClient.setUsernamePassword("", "");
@@ -81,7 +81,7 @@ int mqttSubscribe()
  * @param TOPIC System topic
  * @param MESSAGE Message to be sent
  */
-int mqttOnLoop(const char *PATH, const char *MESSAGE = "")
+int mqttOnLoop(String PATH, String MESSAGE = "")
 {
     if (!mqttClient.connected())
     {

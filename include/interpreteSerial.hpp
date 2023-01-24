@@ -28,7 +28,7 @@ public:
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
         #ifdef DEBUG
-        String str = Serial1.readStringUntil('\n');
+        String str = Serial.readStringUntil('\n');
         #else
         String str = Serial.readStringUntil('\n');
         #endif
@@ -67,7 +67,7 @@ public:
                 mqttCredentials.mqttBroker = cmd[1];
                 mqttCredentials.clientID = cmd[2];
                 mqttCredentials.port = std::stoi(cmd[3].c_str());
-                if (mqttSetup(cmd[1].c_str(), mqttCredentials.port) == 1)
+                if (mqttSetup(cmd[1], mqttCredentials.port) == 1)
                 {
                     send[0] = "1";
                 }
@@ -93,8 +93,8 @@ public:
             {
                 mqttCredentials.pubTopic = cmd[1];
                 String payload = cmd[2];
-                int result = mqttOnLoop(mqttCredentials.pubTopic.c_str(),
-                                        payload.c_str());
+                int result = mqttOnLoop(mqttCredentials.pubTopic,
+                                        payload);
                 if (result == 1)
                 {
                     send[0] = "1";
@@ -183,7 +183,9 @@ public:
             if (cmd[0] == command11){
                 cmd[1] = input.l4;
             }
-            
+            #ifdef DEBUG
+                delay(2000);
+            #endif
             if (send[0] != ""){
                 for (int i = 0; i < 10; i++){
                     Serial.print(send[i] + "\t");

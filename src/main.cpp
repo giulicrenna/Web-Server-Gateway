@@ -9,11 +9,6 @@
 #include "interpreteSerial.hpp"
 // 15681544
 Interpretator myInterprete;
-HardwareSerial debugSerial;
-
-void handleUART(){
-
-}
 
 void task2()
 {
@@ -53,7 +48,6 @@ void task1()
         {
             WiFiSetter::setupWifiSta();
             bool status = WiFi.isConnected();
-            delay(3000);
             if (status)
             {
                 #ifdef DEBUG
@@ -100,7 +94,9 @@ void task1()
 void setup()
 {
     Serial.begin(115200);
+    #ifdef DEBUG
     delay(100);
+    #endif
     Serial1.begin(115200);
     //Serial.onReceiveError(handleUART);
     beginEEPROM();
