@@ -1,38 +1,36 @@
 <html>
 
 <head>
-    <style>
-        .content {
-            max-width: 500px;
-            margin: auto;
-        }
-    </style>
+    <title>Master Control</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <h1 style="text-align:center"><span style="font-family:Arial,Helvetica,sans-serif"><strong>ESP LOCAL
+    <main class="container">
+        <h1><strong>ESP LOCAL
                 DASHBOARD</strong></span></h1>
-    <table align="center" border="1" cellpadding="1" cellspacing="1" style="width:500px">
-        <caption>
-            <p><span style="font-size:16px"><strong>ESP32 Data</strong></span></p>
-        </caption>
-        <tbody>
-            <tr>
-                <td style="text-align:center; width:165px">CPU Frequency</td>
-                <td style="text-align:center; width:321px" id="cpuFreq">%cpuFreq%</td>
-            </tr>
-            <tr>
-                <td style="text-align:center; width:165px">Free Heap</td>
-                <td style="text-align:center; width:321px" id="freeHeap">%freeHeap%</td>
-            </tr>
-            <tr>
-                <td style="text-align:center; width:165px">SDK Version</td>
-                <td style="text-align:center; width:321px" id="sdkVersion">%sdkVersion%</td>
-            </tr>
-        </tbody>
-    </table>
+        <table align="center" border="1" cellpadding="1" cellspacing="1" style="width:500px">
+            <caption>
+                <p><span style="font-size:16px"><strong>ESP32 Data</strong></span></p>
+            </caption>
+            <tbody>
+                <tr>
+                    <td>CPU Frequency</td>
+                    <td id="cpuFreq">%cpuFreq%</td>
+                </tr>
+                <tr>
+                    <td>Free Heap</td>
+                    <td id="freeHeap">%freeHeap%</td>
+                </tr>
+                <tr>
+                    <td>SDK Version</td>
+                    <td id="sdkVersion">%sdkVersion%</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <p style="text-align:center">&nbsp;</p>
+        <p style="text-align:center">&nbsp;</p>
+    </main>
 </body>
 
 <script>

@@ -1,5 +1,5 @@
 #ifdef isESP8266
-#include <esp8266WiFi.h>
+#include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #else
 #include <WiFi.h>
@@ -44,6 +44,8 @@ public:
         }
         // ESPAsyncWebServer Setup
         // Web Server Root URL
+        server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+                  { request->send(LittleFS, "/www/style.css", "text/css"); });
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/www/index.html", "text/html"); });
 
@@ -97,6 +99,7 @@ public:
             ESP.restart(); });
         server.begin();
     }
+
     static void setupLocalServer()
     {
 #ifdef DEBUG
@@ -104,6 +107,8 @@ public:
 #endif
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/wwwlocal/index.html", "text/html"); });
+        server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+                  { request->send(LittleFS, "/wwwlocal/style.css", "text/css"); });
         server.on("/allvalues", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(200, "application/json", processorLocal()); });
 
@@ -123,14 +128,15 @@ public:
 #endif
             WiFi.mode(WIFI_STA);
             WiFi.begin(config.ssid.c_str(), config.password.c_str());
-            delay(3000);
+            delay(5000);
 
             while (WiFi.status() != WL_CONNECTED)
             {
 #ifdef DEBUG
                 Serial.print(".");
 #endif
-                delay(500);
+                delay(50);
+
                 if (millis() - lastTimeTimeOut > 10000)
                 {
 #ifdef DEBUG
@@ -156,7 +162,7 @@ public:
 String processor()
 {
     String output = "";
-    output += input.l1 + ";" + input.l2 + ";" + input.WiFiScan[0] + ";" + input.WiFiScan[1] + ";" + input.WiFiScan[2] + ";" + input.WiFiScan[3] + ";" + input.WiFiScan[4] + ";" + input.WiFiScan[5] + ";" + input.WiFiScan[6] + ";" + input.WiFiScan[7] + ";" + input.WiFiScan[8] + ";" + input.WiFiScan[9] + ";" + input.l3;
+    output += input.l1 + ";" + input.l2 + ";" + input.WiFiScan[0] + ";" + input.WiFiScan[1] + ";" + input.WiFiScan[2] + ";" + input.WiFiScan[3] + ";" + input.WiFiScan[4] + ";" + input.WiFiScan[5] + ";" + input.l3 + ";";
 
     return output;
 }

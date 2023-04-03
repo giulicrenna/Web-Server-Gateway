@@ -1,5 +1,5 @@
 #ifdef isESP8266
-#include <esp8266WiFi.h>
+#include <ESP8266WiFi.h>
 #else
 #include <WiFi.h>
 #endif
@@ -21,9 +21,22 @@ public:
     const char *command9 = "N";
     const char *command10 = "C";
     const char *command11 = "L4";
+    const char *command12 = "ERASE";
 
     // private:
-    virtual void interpretateCommandTask()
+    virtual void interpretateCommandTask(){
+        try
+        {
+            interpretateNoExcept();
+        }
+        catch(const std::exception& e)
+        {
+            return;
+        }
+        
+    }
+
+    virtual void interpretateNoExcept()
     {
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
@@ -35,7 +48,7 @@ public:
 
         std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
-        for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());}
+        for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());cmd[k].trim();}
 
         if (cmd[0] != "")
         {
@@ -176,16 +189,18 @@ public:
                         send[0] = "1";
                         putData();
                     }else{
-                        send[0] = "1";
+                        send[0] = "0";
+                        currentState = START_AP;
                     }
                 }
             }
             if (cmd[0] == command11){
                 cmd[1] = input.l4;
             }
-            #ifdef DEBUG
-                delay(2000);
-            #endif
+            if(cmd[0] == command12){
+                myData.clear();
+                ESP.restart();
+            }
             if (send[0] != ""){
                 for (int i = 0; i < 10; i++){
                     Serial.print(send[i] + "\t");

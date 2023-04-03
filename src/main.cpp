@@ -14,26 +14,8 @@ void task2()
 {
     for (;;)
     {
-        switch (currentState)
-        {
-        case START_STA:
-        {
-            myInterprete.interpretateCommandTask();
-        }
-
-        case START_INTERPRETATOR_LOCAL_SERVER:
-        {
-            myInterprete.interpretateCommandTask();
-        }
-
-        case START_INTERPRETATOR:
-        {
-            myInterprete.interpretateCommandTask();
-        }
-
-        default:
-            break;
-        }
+        myInterprete.interpretateCommandTask();
+        break;
     }
 }
 
@@ -50,14 +32,16 @@ void task1()
             bool status = WiFi.isConnected();
             if (status)
             {
-                #ifdef DEBUG
+#ifdef DEBUG
                 Serial.println("[*] Killing AP");
-                #endif
+#endif
                 server.end();
                 server.reset();
                 currentState = START_INTERPRETATOR_LOCAL_SERVER;
                 break;
-            }else{
+            }
+            else
+            {
                 currentState = START_AP;
                 break;
             }
@@ -70,7 +54,7 @@ void task1()
 
         case START_INTERPRETATOR_LOCAL_SERVER:
         {
-            WiFiSetter::setupLocalServer();
+            // WiFiSetter::setupLocalServer();
             currentState = START_INTERPRETATOR;
             break;
         }
@@ -85,7 +69,8 @@ void task1()
             break;
         }
 
-        if(millis() - lastTimeCleanData_l4  > 5000){
+        if (millis() - lastTimeCleanData_l4 > 5000)
+        {
             input.l4 = "";
         }
     }
@@ -94,22 +79,23 @@ void task1()
 void setup()
 {
     Serial.begin(115200);
-    #ifdef DEBUG
+#ifdef DEBUG
     delay(100);
-    #endif
+#endif
     Serial1.begin(115200);
-    //Serial.onReceiveError(handleUART);
+    // Serial.onReceiveError(handleUART);
     beginEEPROM();
     loadData();
-    #ifdef DEBUG
+#ifdef DEBUG
     Serial.println(config.ssid + ";" + config.password + ";" + config.gprs + ";" + config.wifi);
-    #endif
+#endif
     topics_.startDataSet();
     myMessages_.startDataSet();
 }
 
-void loop() { 
+void loop()
+{
     task1();
     task2();
-    delay(1);
+    delayMicroseconds(500);
 }
