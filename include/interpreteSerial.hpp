@@ -144,11 +144,11 @@ public:
                 String data;
                 if (config.gprs == "on")
                 {
-                    data += "1/";
+                    data += "1";
                 }
                 else
                 {
-                    data += "0/";
+                    data += "0";
                 }
                 if (config.wifi == "on")
                 {
