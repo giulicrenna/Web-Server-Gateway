@@ -14,15 +14,16 @@ public:
     const char *command2 = "S"; // PIC send topic where to subscribe
     const char *command3 = "P"; // PIC send topic where to publish -> payload -> 1/0
     const char *command4 = "Q"; // I send recursively the messages
-    const char *command5 = "H"; // I send gprs-wifi config
-    const char *command6 = "L1";
-    const char *command7 = "L2";
+    const char *command5 = "H"; // (DEPRECADO) I send gprs-wifi config 
+    const char *command6 = "L1"; // (DEPRECADO)
+    const char *command7 = "L2"; // (DEPRECADO)
     const char *command8 = "L3";
     const char *command9 = "N";
-    const char *command10 = "C";
+    const char *command10 = "C"; // WiFi setup
     const char *command11 = "L4";
     const char *command12 = "ERASE";
-
+    const char *command13 = "M"; // Cantidad de nodos
+    const char *command14 = "STATUS"; // JSON
     // private:
     virtual void interpretateCommandTask(){
         try
@@ -187,7 +188,6 @@ public:
                     if(WiFi.isConnected()){
                         currentState = START_INTERPRETATOR_LOCAL_SERVER;
                         send[0] = "1";
-                        putData();
                     }else{
                         send[0] = "0";
                         currentState = START_AP;
@@ -198,9 +198,17 @@ public:
                 cmd[1] = input.l4;
             }
             if(cmd[0] == command12){
-                myData.clear();
                 ESP.restart();
             }
+
+            if(cmd[0] == command13){
+                input.cantNodos = cmd[1];
+            }
+
+            if(cmd[0] == command14){
+                input.statusJSON = cmd[1];
+            }
+
             if (send[0] != ""){
                 for (int i = 0; i < 10; i++){
                     Serial.print(send[i] + "\t");

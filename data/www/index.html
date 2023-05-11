@@ -18,63 +18,110 @@
         <table>
             <tr>
                 <td style="text-align: center">
+                    <form action="/pub">
+                        <h4>COMANDO</h4>
 
+                        <div class="grid">
+                            <label for="cmd">
+                                Comando
+                                <input id="cmd" type="text" name="cmd" value="{}"/>
+                            </label>
+                        </div>
+
+                        <input  type="submit" value="Enviar">
+
+                    </form>
                     <form action="/get">
-                        <p id="id_">%id_%</p>
-            <h4>Habilitación:</h4>
+                        <h4>ESTADO DEL GATEWAY</h4>
 
-            <div class="grid">
-                <label for = "cbox1">
-                    GPRS                    
-                    <input id="cbox1" type="checkbox" name="gprs" value="on" />
-                </label>
-                <label for = "cbox2">
-                    WiFi
-                    <input id="cbox2" type="checkbox" name="wifi" value="on" />
-                </label>
-            </div>
-            
-            <h4>GPRS state:</h4>
-            <p id="l3_">%L3%</p>
+                        <div class="grid">
+                            <label for="status">
+                                Status:
+                                <p id="status">%STATUS%</p>
+                            </label>
+                        </div>
 
-            <h4>Wifi:</h4>
-
-            <div class="grid">
-                <label for = "ssid">
-                    SSID:
-                    <input id="ssid" maxlength="16" name="ssid" required="" size="25" type="text">
-                </label>
-                <label for = "pass">
-                    Password:
-                    <input id="pass" maxlength="16" name="pass" required="" size="25" type="password" />
-                </label>
-            </div>
-
-            <input type="submit" value="Submit">
-            <p id="w0">%W0%</p>
-            <p id="w1">%W1%</p>
-            <p id="w2">%W2%</p>
-            <p id="w3">%W3%</p>
-            <p id="w4">%W4%</p>
-            <p id="w5">%W5%</p>
-            <tr>
-                <td style="text-align: center">
-                    <h4><strong>Nodos:</strong>&nbsp;</h4>
-                    <table>
-                        <tbody>
-                            <tr>
+                        <div class=""grid>
+                            <label for="nodos">    
+                                Tabla de nodos
                                 <p id="nodos">%NODOS%</p>
-                                <td>&nbsp;</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </label>
+                        </div>
+
+                        <h4>CONEXIONES</h4>
+
+                        <div class="grid">
+                            <label for="cbox1">
+                                GPRS
+                                <input id="cbox1" type="checkbox" name="gprs" value="on" />
+                            </label>
+                            <label for="cbox2">
+                                WiFi
+                                <input id="cbox2" type="checkbox" name="wifi" value="on" />
+                            </label>
+                        </div>
+
+                        <h5>Wifi:</h5>
+
+                        <div class="grid">
+                            <label for="ssid">
+                                SSID
+                                <input id="ssid" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                            <label for="pass">
+                                Password
+                                <input id="pass" maxlength="16" name="pass" required="" size="25" type="password" />
+                            </label>
+                        </div>
+                        
+                        <h5>GPRS:</h5>
+
+                        <div class="grid">
+                            <label for="apn">
+                                APN
+                                <input id="apn" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                        </div>
+
+                        <h4>MQTT server</h4>
+
+                        <div class="grid">
+                            <label for="host">
+                                Host
+                                <input id="host" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                            <label for="port">
+                                Puerto
+                                <input id="port" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                        </div>
+
+                        <div class=""grid>
+                            <label for="user">
+                                Usuario
+                                <input id="user" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                            <label for="pass">
+                                Contraseña
+                                <input id="pass" maxlength="16" name="ssid" required="" size="25" type="password">
+                            </label>
+                        </div>
+
+                        <p id="w0">%W0%</p>
+                        <p id="w1">%W1%</p>
+                        <p id="w2">%W2%</p>
+                        <p id="w3">%W3%</p>
+                        <p id="w4">%W4%</p>
+                        <p id="w5">%W5%</p>
+
+                        <input  type="submit" value="Aceptar">
+                        <tr>
                 </td>
-            </td>
             </tr>
-        </tbody>
-    </form>
-    </tr>
-</table>
+            </tbody>
+            </form>
+            </tr>
+        </table>
     </main>
 </body>
 
@@ -94,6 +141,8 @@
                 document.getElementById("w4").innerHTML = a[6];
                 document.getElementById("w5").innerHTML = a[7];
                 document.getElementById("l3_").innerHTML = a[8];
+                document.getElementById("status").innerHTML = a[8];
+                document.getElementById("cantnodos").innerHTML = a[8];
             }
         };
         xhttp.open("GET", "/allvalues", true);

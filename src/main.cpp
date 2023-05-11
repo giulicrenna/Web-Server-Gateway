@@ -10,15 +10,6 @@
 // 15681544
 Interpretator myInterprete;
 
-void task2()
-{
-    for (;;)
-    {
-        myInterprete.interpretateCommandTask();
-        break;
-    }
-}
-
 void task1()
 {
     for (;;)
@@ -36,7 +27,6 @@ void task1()
                 Serial.println("[*] Killing AP");
 #endif
                 server.end();
-                server.reset();
                 currentState = START_INTERPRETATOR_LOCAL_SERVER;
                 break;
             }
@@ -49,12 +39,13 @@ void task1()
 
         case START_AP:
         {
-            WiFiSetter::setupApMode();
+            WiFiSetter::startServer();
         }
 
         case START_INTERPRETATOR_LOCAL_SERVER:
         {
-            // WiFiSetter::setupLocalServer();
+
+            WiFiSetter::startServer(true);
             currentState = START_INTERPRETATOR;
             break;
         }
@@ -79,23 +70,15 @@ void task1()
 void setup()
 {
     Serial.begin(115200);
-#ifdef DEBUG
-    delay(100);
-#endif
-    Serial1.begin(115200);
     // Serial.onReceiveError(handleUART);
-    beginEEPROM();
-    loadData();
-#ifdef DEBUG
-    Serial.println(config.ssid + ";" + config.password + ";" + config.gprs + ";" + config.wifi);
-#endif
     topics_.startDataSet();
     myMessages_.startDataSet();
+#ifdef DEBUG
+    Serial.println("INICIADO\r\n");
+#endif
 }
 
 void loop()
 {
     task1();
-    task2();
-    delayMicroseconds(500);
 }

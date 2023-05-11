@@ -35,6 +35,8 @@ struct
     String l3 = "default";
     String l4 = "default";
     String nodes = "default";
+    String cantNodos = "";
+    String statusJSON = "{}";
 } input;
 
 struct
@@ -43,6 +45,7 @@ struct
     String password = "";
     String gprs = "off";
     String wifi = "off";
+    String apn = "";
 } config;
 
 struct
@@ -51,5 +54,6 @@ struct
     String clientID;
     String subsTopic = "testTopicAvoid/";
     String pubTopic;
-    int port;
+    String user = "";
+    String password = "";    int port;
 } mqttCredentials;
