@@ -10,33 +10,6 @@
 // 15681544
 Interpretator myInterprete;
 
-void task2()
-{
-    for (;;)
-    {
-        switch (currentState)
-        {
-        case START_STA:
-        {
-            myInterprete.interpretateCommandTask();
-        }
-
-        case START_INTERPRETATOR_LOCAL_SERVER:
-        {
-            myInterprete.interpretateCommandTask();
-        }
-
-        case START_INTERPRETATOR:
-        {
-            myInterprete.interpretateCommandTask();
-        }
-
-        default:
-            break;
-        }
-    }
-}
-
 void task1()
 {
     for (;;)
@@ -50,14 +23,15 @@ void task1()
             bool status = WiFi.isConnected();
             if (status)
             {
-                #ifdef DEBUG
+#ifdef DEBUG
                 Serial.println("[*] Killing AP");
-                #endif
+#endif
                 server.end();
-                server.reset();
                 currentState = START_INTERPRETATOR_LOCAL_SERVER;
                 break;
-            }else{
+            }
+            else
+            {
                 currentState = START_AP;
                 break;
             }
@@ -65,12 +39,13 @@ void task1()
 
         case START_AP:
         {
-            WiFiSetter::setupApMode();
+            WiFiSetter::startServer();
         }
 
         case START_INTERPRETATOR_LOCAL_SERVER:
         {
-            WiFiSetter::setupLocalServer();
+
+            WiFiSetter::startServer(true);
             currentState = START_INTERPRETATOR;
             break;
         }
@@ -85,7 +60,8 @@ void task1()
             break;
         }
 
-        if(millis() - lastTimeCleanData_l4  > 5000){
+        if (millis() - lastTimeCleanData_l4 > 5000)
+        {
             input.l4 = "";
         }
     }
@@ -94,22 +70,15 @@ void task1()
 void setup()
 {
     Serial.begin(115200);
-    #ifdef DEBUG
-    delay(100);
-    #endif
-    Serial1.begin(115200);
-    //Serial.onReceiveError(handleUART);
-    beginEEPROM();
-    loadData();
-    #ifdef DEBUG
-    Serial.println(config.ssid + ";" + config.password + ";" + config.gprs + ";" + config.wifi);
-    #endif
+    // Serial.onReceiveError(handleUART);
     topics_.startDataSet();
     myMessages_.startDataSet();
+#ifdef DEBUG
+    Serial.println("INICIADO\r\n");
+#endif
 }
 
-void loop() { 
+void loop()
+{
     task1();
-    task2();
-    delay(1);
 }

@@ -1,5 +1,5 @@
 #ifdef isESP8266
-#include <esp8266WiFi.h>
+#include <ESP8266WiFi.h>
 #else
 #include <WiFi.h>
 #endif
@@ -14,16 +14,30 @@ public:
     const char *command2 = "S"; // PIC send topic where to subscribe
     const char *command3 = "P"; // PIC send topic where to publish -> payload -> 1/0
     const char *command4 = "Q"; // I send recursively the messages
-    const char *command5 = "H"; // I send gprs-wifi config
-    const char *command6 = "L1";
-    const char *command7 = "L2";
+    const char *command5 = "H"; // (DEPRECADO) I send gprs-wifi config 
+    const char *command6 = "L1"; // (DEPRECADO)
+    const char *command7 = "L2"; // (DEPRECADO)
     const char *command8 = "L3";
     const char *command9 = "N";
-    const char *command10 = "C";
+    const char *command10 = "C"; // WiFi setup
     const char *command11 = "L4";
-
+    const char *command12 = "ERASE";
+    const char *command13 = "M"; // Cantidad de nodos
+    const char *command14 = "STATUS"; // JSON
     // private:
-    virtual void interpretateCommandTask()
+    virtual void interpretateCommandTask(){
+        try
+        {
+            interpretateNoExcept();
+        }
+        catch(const std::exception& e)
+        {
+            return;
+        }
+        
+    }
+
+    virtual void interpretateNoExcept()
     {
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
@@ -35,7 +49,7 @@ public:
 
         std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
-        for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());}
+        for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());cmd[k].trim();}
 
         if (cmd[0] != "")
         {
@@ -131,11 +145,11 @@ public:
                 String data;
                 if (config.gprs == "on")
                 {
-                    data += "1/";
+                    data += "1";
                 }
                 else
                 {
-                    data += "0/";
+                    data += "0";
                 }
                 if (config.wifi == "on")
                 {
@@ -174,18 +188,27 @@ public:
                     if(WiFi.isConnected()){
                         currentState = START_INTERPRETATOR_LOCAL_SERVER;
                         send[0] = "1";
-                        putData();
                     }else{
-                        send[0] = "1";
+                        send[0] = "0";
+                        currentState = START_AP;
                     }
                 }
             }
             if (cmd[0] == command11){
                 cmd[1] = input.l4;
             }
-            #ifdef DEBUG
-                delay(2000);
-            #endif
+            if(cmd[0] == command12){
+                ESP.restart();
+            }
+
+            if(cmd[0] == command13){
+                input.cantNodos = cmd[1];
+            }
+
+            if(cmd[0] == command14){
+                input.statusJSON = cmd[1];
+            }
+
             if (send[0] != ""){
                 for (int i = 0; i < 10; i++){
                     Serial.print(send[i] + "\t");

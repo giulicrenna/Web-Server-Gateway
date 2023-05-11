@@ -1,108 +1,128 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 
 <head>
-    <title>Lora</title>
-    <style>
-        .content {
-            max-width: 500px;
-            margin: auto;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Master Control</title>
 </head>
 
 <body>
-    <div class="content">
-        <table style="width: 437px;">
-            <tbody>
-                <tr style="height: 130px;">
-                    <td style="width: 436px; height: 130px;">
-                        <img style="display: block; margin-left: auto; margin-right: auto;" controls="controls"
-                            width="256" height="128" src="logo">
-                    </td>
-                </tr>
-                <form action="/get">
-                    <tr style="height: 113.781px;">
-                        <td style="width: 436px; text-align: center; height: 113.781px;">
-                            <p id="id_">%id_%</p>
-                            <h4>&nbsp;<span
-                                    style="text-decoration: underline;"><strong>Habilitaci&oacute;n:</strong></span>
-                            </h4>
-                            <table style="height: 54px; width: 428.5px;">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 160px;">GPRS</td>
-                                        <td style="width: 251.5px; text-align: center;"><input id="cbox1"
-                                                type="checkbox" name="gprs" value="on" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width: 160px;">WiFi</td>
-                                        <td style="text-align: center; width: 251.5px;"><input id="cbox2"
-                                                type="checkbox" name="wifi" value="on" /></td>
-                                    </tr>
+    <header
+        style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding-bottom: 0 !important;">
+        <img style="display: block; margin-left: auto; margin-right: auto;" controls="controls" width="256" height="128"
+            src="logo">
+    </header>
+    <main class="container">
+        <table>
+            <tr>
+                <td style="text-align: center">
+                    <form action="/pub">
+                        <h4>COMANDO</h4>
 
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 436px; height: 75px; text-align: center;">
-                            <h4><span style="text-decoration: underline;text-align: center;"><strong>GPRS
-                                        state:</strong></span></h4>
-                            <p style="text-align: center;" id="l3">%l3%</p>
-                        </td>
-                    </tr>
-                    <tr style="height: 208px;">
-                        <td style="width: 436px; height: 208px; text-align: center;">
-                            <h4><span style="text-decoration: underline;"><strong>Wifi:</strong></span></h4>
-                            <table style="height: 34px; width: 428.578px;">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 117px;">SSID:</td>
-                                        <td style="width: 293.578px;"><input id="ssid" maxlength="16" name="ssid"
-                                                required="" size="25" type="text" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width: 117px;">Password:</td>
-                                        <td style="width: 293.578px;"><input id="pass" maxlength="16" name="pass"
-                                                required="" size="25" type="password" /></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table style="height: 120px;" width="428">
-                                <tbody>
-                                    <input type="submit" value="Submit">
-                                    <tr>
-                                        <td style="width: 418px; text-align: center;">
-                                            <p id="w0">%W0%</p>
-                                            <p id="w1">%W1%</p>
-                                            <p id="w2">%W2%</p>
-                                            <p id="w3">%W3%</p>
-                                            <p id="w4">%W4%</p>
-                                            <p id="w5">%W5%</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                </form>
-                <tr style="height: 133px;">
-                    <td style="width: 436px; height: 133px;">
-                        <h4 style="text-align: center;"><span
-                                style="text-decoration: underline;"><strong>Nodos:</strong></span>&nbsp;</h4>
-                        <table style="width: 433px;">
-                            <tbody>
-                                <tr style="height: 73px;">
-                                    <p id="nodos">%NODOS%</p>
-                                    <td style="width: 433px; height: 73px;">&nbsp;</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
+                        <div class="grid">
+                            <label for="cmd">
+                                Comando
+                                <input id="cmd" type="text" name="cmd" value="{}"/>
+                            </label>
+                        </div>
+
+                        <input  type="submit" value="Enviar">
+
+                    </form>
+                    <form action="/get">
+                        <h4>ESTADO DEL GATEWAY</h4>
+
+                        <div class="grid">
+                            <label for="status">
+                                Status:
+                                <p id="status">%STATUS%</p>
+                            </label>
+                        </div>
+
+                        <div class=""grid>
+                            <label for="nodos">    
+                                Tabla de nodos
+                                <p id="nodos">%NODOS%</p>
+                            </label>
+                        </div>
+
+                        <h4>CONEXIONES</h4>
+
+                        <div class="grid">
+                            <label for="cbox1">
+                                GPRS
+                                <input id="cbox1" type="checkbox" name="gprs" value="on" />
+                            </label>
+                            <label for="cbox2">
+                                WiFi
+                                <input id="cbox2" type="checkbox" name="wifi" value="on" />
+                            </label>
+                        </div>
+
+                        <h5>Wifi:</h5>
+
+                        <div class="grid">
+                            <label for="ssid">
+                                SSID
+                                <input id="ssid" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                            <label for="pass">
+                                Password
+                                <input id="pass" maxlength="16" name="pass" required="" size="25" type="password" />
+                            </label>
+                        </div>
+                        
+                        <h5>GPRS:</h5>
+
+                        <div class="grid">
+                            <label for="apn">
+                                APN
+                                <input id="apn" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                        </div>
+
+                        <h4>MQTT server</h4>
+
+                        <div class="grid">
+                            <label for="host">
+                                Host
+                                <input id="host" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                            <label for="port">
+                                Puerto
+                                <input id="port" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                        </div>
+
+                        <div class=""grid>
+                            <label for="user">
+                                Usuario
+                                <input id="user" maxlength="16" name="ssid" required="" size="25" type="text">
+                            </label>
+                            <label for="pass">
+                                Contraseña
+                                <input id="pass" maxlength="16" name="ssid" required="" size="25" type="password">
+                            </label>
+                        </div>
+
+                        <p id="w0">%W0%</p>
+                        <p id="w1">%W1%</p>
+                        <p id="w2">%W2%</p>
+                        <p id="w3">%W3%</p>
+                        <p id="w4">%W4%</p>
+                        <p id="w5">%W5%</p>
+
+                        <input  type="submit" value="Aceptar">
+                        <tr>
+                </td>
+            </tr>
             </tbody>
+            </form>
+            </tr>
         </table>
-    </div>
+    </main>
 </body>
 
 <script>
@@ -117,14 +137,12 @@
                 document.getElementById("w0").innerHTML = a[2];
                 document.getElementById("w1").innerHTML = a[3];
                 document.getElementById("w2").innerHTML = a[4];
-                document.getElementById("w3").innerHTML = a[6];
-                document.getElementById("w4").innerHTML = a[7];
-                document.getElementById("w5").innerHTML = a[8];
-                document.getElementById("w6").innerHTML = a[9];
-                document.getElementById("w7").innerHTML = a[10];
-                document.getElementById("w8").innerHTML = a[11];
-                document.getElementById("w9").innerHTML = a[12];
-                document.getElementById("l3").innerHTML = a[13];
+                document.getElementById("w3").innerHTML = a[5];
+                document.getElementById("w4").innerHTML = a[6];
+                document.getElementById("w5").innerHTML = a[7];
+                document.getElementById("l3_").innerHTML = a[8];
+                document.getElementById("status").innerHTML = a[8];
+                document.getElementById("cantnodos").innerHTML = a[8];
             }
         };
         xhttp.open("GET", "/allvalues", true);
