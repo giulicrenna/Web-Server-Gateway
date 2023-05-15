@@ -11,6 +11,7 @@
 
 AsyncWebServer server(80);
 
+void printTest(String msg);
 void beginEEPROM();
 void setupWifiSta();
 void startAP();
@@ -22,145 +23,159 @@ class WiFiSetter
 {
 protected:
 public:
-    static void startServer(bool isClient = false)
+    static void startServer()
     {
-        if(!isClient){
-            startAP();
-        }
-        // ESPAsyncWebServer Setup
-        // Web Server Root URL
         server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/www/style.css", "text/css"); });
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/www/index.html", "text/html"); });
-
         server.on("/allvalues", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(200, "application/json", processor()); });
         server.on("/logo", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/www/logo.png", "image/png"); });
+
         server.on("/pub", HTTP_GET, [](AsyncWebServerRequest *request)
                   {
-                    String input;
-                    if(request->hasParam("cmd")){
-                        input = request->getParam("cmd")->value();
-                        // ¿Que hago con ese input?
-                    } });
-        server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+                      String input;
+                      if (request->hasParam("cmd"))
+                      {
+                          input = request->getParam("cmd")->value();
+                          Serial.print("CMD\t" + input + "\r\n");
+                      } });
+
+        server.on("/guardar_salir", HTTP_GET, [](AsyncWebServerRequest *request)
                   {
-            String inputMessage, inputParam;
-            if (request->hasParam("ssid"))
-            {
-            inputMessage = request->getParam("ssid")->value();
-            inputParam = "ssid";
-            config.ssid = inputMessage;
-            }
-            if (request->hasParam("pass"))
-            {
-            inputMessage = request->getParam("pass")->value();
-            inputParam = "pass";
-            config.password = inputMessage;
-            }
-            if (request->hasParam("gprs"))
-            {
-            inputMessage = request->getParam("gprs")->value();
-            inputParam = "gprs";
-            config.gprs = inputMessage;
-            }else{
-            config.gprs = "off";
-            }
-            if (request->hasParam("wifi"))
-            {
-            inputMessage = request->getParam("wifi")->value();
-            inputParam = "wifi";
-            config.wifi = inputMessage;
-            }else{
-            config.wifi = "off";
-            }
-            if (request->hasParam("apn")){
-                inputMessage = request->getParam("apn")->value();
-                config.apn = inputMessage;
-            }
-            if(request->hasParam("host")){
-                inputMessage = request->getParam("host")->value();
-                mqttCredentials.mqttBroker = inputMessage;
-                }
-            if(request->hasParam("port")){
-                inputMessage = request->getParam("port")->value();
-                mqttCredentials.port = inputMessage.toInt();
-                }
-            if(request->hasParam("user")){
-                inputMessage = request->getParam("user")->value();
-                mqttCredentials.user = inputMessage;
-                }
-            if(request->hasParam("pass")){
-                inputMessage = request->getParam("pass")->value();
-                mqttCredentials.password = inputMessage;
-                }
+                      String gprsState, wifiState;
 
-            currentState = START_STA;
+                      if (config.gprs == "on")
+                      {
+                          gprsState = "1";
+                      }
+                      else
+                      {
+                          gprsState = "0";
+                      }
 
-            request->send(200, "text/html", "HTTP GET request sent to your ESP on input field (" 
-                                            + inputParam + ") with value: " + inputMessage +
-                                            "<br><a href=\"/\">Return to Home Page</a>"); 
-            
-            Serial.print("C\t" + config.ssid + "\t" + config.password + "\r\n");
+                      if (config.wifi == "on")
+                      {
+                          wifiState = "1";
+                      }
+                      else
+                      {
+                          wifiState = "0";
+                      }
 
-            delay(5);
-            
-            String gprsState, wifiState; 
-            
-            if(config.gprs == "on"){
-                gprsState = "1";
-            }else{
-                gprsState = "0";
-            }
-            if(config.wifi == "on"){
-                wifiState = "1";
-            }else{
-                wifiState = "0";
-            }
-            Serial.print("H\t" + gprsState + "/" + wifiState + "\r\n");
-            delay(5);
+                      Serial.print("HABILITACIONES\t" + gprsState + "/" + wifiState + "\r\n");
+                    request->send(200, "text/html", "WebServer cerrado."); 
+                      server.end(); });
 
-            Serial.print("APN\t" + config.apn + "\r\n"); });
+        server.on("/aplicar_mqtt", HTTP_GET, [](AsyncWebServerRequest *request)
+                  {
+                    String inputMessage, inputParam;
+
+                    if (request->hasParam("host"))
+                      {
+                          inputMessage = request->getParam("host")->value();
+                          mqttCredentials.mqttBroker = inputMessage;
+                      }
+                      if (request->hasParam("port"))
+                      {
+                          inputMessage = request->getParam("port")->value();
+                          mqttCredentials.port = inputMessage.toInt();
+                      }
+                      if (request->hasParam("user"))
+                      {
+                          inputMessage = request->getParam("user")->value();
+                          mqttCredentials.user = inputMessage;
+                      }
+                      if (request->hasParam("pass"))
+                      {
+                          inputMessage = request->getParam("pass")->value();
+                          mqttCredentials.password = inputMessage;
+                      } 
+                      
+                    Serial.print("MQTT\t" + mqttCredentials.mqttBroker + "\t" + mqttCredentials.port + "\t" + mqttCredentials.user + "\t" + mqttCredentials.password + "\r\n");
+                      
+                    request->send(200, "text/html", "Parametros establecidos correctamente. <br><a href=\"/\">Volver al panel de configuracion..</a>"); });
+
+        server.on("/aplicar_gprs", HTTP_GET, [](AsyncWebServerRequest *request)
+                  {
+                      String inputMessage, inputParam;
+
+                      if (request->hasParam("gprs"))
+                      {
+                          inputMessage = request->getParam("gprs")->value();
+                          inputParam = "gprs";
+                          config.gprs = inputMessage;
+                      }
+                      else
+                      {
+                          config.gprs = "off";
+                      }
+                      if (request->hasParam("apn"))
+                      {
+                          inputMessage = request->getParam("apn")->value();
+                          config.apn = inputMessage;
+                      } 
+                      
+                        Serial.print("APN\t" + config.apn + "\r\n"); 
+                        
+                    request->send(200, "text/html", "Parametros establecidos correctamente. <br><a href=\"/\">Volver al panel de configuracion..</a>"); });
+        server.on("/aplicar_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+                  {
+                      String inputMessage, inputParam;
+
+                      if (request->hasParam("ssid"))
+                      {
+                          inputMessage = request->getParam("ssid")->value();
+                          inputParam = "ssid";
+                          config.ssid = inputMessage;
+                      }
+                      if (request->hasParam("pass"))
+                      {
+                          inputMessage = request->getParam("pass")->value();
+                          inputParam = "pass";
+                          config.password = inputMessage;
+                      }
+                      if (request->hasParam("wifi"))
+                      {
+                          inputMessage = request->getParam("wifi")->value();
+                          inputParam = "wifi";
+                          config.wifi = inputMessage;
+                      }
+                      else
+                      {
+                          config.wifi = "off";
+                      }
+
+                      Serial.print("C\t" + config.ssid + "\t" + config.password + "\r\n");
+                    request->send(200, "text/html", "Parametros establecidos correctamente. <br><a href=\"/\">Volver al panel de configuracion..</a>"); });
 
         server.begin();
+        printTest("[*] Web server started\n");
     }
 
     static void setupWifiSta()
     {
         if (config.ssid != "")
         {
-            int lastTimeTimeOut = 0;
-#ifdef DEBUG
-            Serial.println(String(WiFi.getMode()));
-#endif
+            int count = 0;
             WiFi.mode(WIFI_STA);
             WiFi.begin(config.ssid.c_str(), config.password.c_str());
-            delay(2000);
 
-            while (WiFi.status() != WL_CONNECTED)
+            while (!WiFi.isConnected())
             {
-#ifdef DEBUG
-                Serial.print(".");
-#endif
-                delay(50);
-
-                if (millis() - lastTimeTimeOut > 10000)
+                if (count == 20000)
                 {
-#ifdef DEBUG
-                    Serial.println("\nCould not connect to the WiFi network...\n");
-#endif
+                    printTest("Could not connect to wifi\n");
                     break;
-
-                    lastTimeTimeOut = millis();
                 }
+                count++;
+                delay(1);
             }
             if (WiFi.status() == WL_CONNECTED)
             {
-#ifdef DEBUG
-                Serial.print("\nDevice Connected to the network: " + WiFi.localIP().toString() + " is the current ip\n");
-#endif
+                printTest("\nDevice Connected to the network: " + WiFi.localIP().toString() + " is the current ip\n");
             }
         }
         else
@@ -172,7 +187,6 @@ public:
 
 void startAP()
 {
-    Serial.println("\n[*] Creating AP");
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(local_ip, gateway, subnet);
     WiFi.softAP(ssid, password);
@@ -184,8 +198,6 @@ void startAP()
         if (i <= 9)
         {
             input.WiFiScan[i] = WiFi.SSID(i);
-            Serial1.println(input.WiFiScan[i]);
-            Serial1.println(WiFi.softAPIP());
         }
     }
 }
@@ -193,7 +205,23 @@ void startAP()
 String processor()
 {
     String output = "";
-    output += input.l1 + ";" + input.l2 + ";" + input.WiFiScan[0] + ";" + input.WiFiScan[1] + ";" + input.WiFiScan[2] + ";" + input.WiFiScan[3] + ";" + input.WiFiScan[4] + ";" + input.WiFiScan[5] + ";" + input.l3 + ";" + input.cantNodos + ";" + input.statusJSON;
+    output += input.nodes + ";";
+    output += input.cantNodos + ";";
+    output += input.statusJSON + ";";
+    output += config.ssid + ";";
+    output += config.password + ";";
+    output += config.apn + ";";
+    output += mqttCredentials.mqttBroker + ";";
+    output += String(mqttCredentials.port) + ";";
+    output += mqttCredentials.user + ";";
+    output += mqttCredentials.password + ";";
 
     return output;
+}
+
+void printTest(String msg)
+{
+#ifdef DEBUG
+    Serial.print(msg);
+#endif
 }

@@ -1,8 +1,10 @@
 #define DEBUG
 #define isESP8266
+
 const char *ssid = "Darkflow-Lora";
 const char *password = NULL;
 
+int baudrate = 115200;
 int lastTimeCleanData_l4 = 0;
 int lastTimeRead = 0;
 int mQueueSize = 5;
@@ -12,14 +14,16 @@ typedef enum
     NONE,
     START_STA,
     START_AP,
+    WAIT_FOR_CONNECTION,
     START_INTERPRETATOR_LOCAL_SERVER,
     START_INTERPRETATOR
 } States;
 
-States currentState = START_STA;
+States currentState = START_AP;
 
 mStructures::mQueue myMessages_(mQueueSize);
 mStructures::mQueue topics_(mQueueSize);
+mStructures::mQueue sendings(mQueueSize);
 std::vector<std::string> messages;
 std::vector<std::string> topics;
 
@@ -35,7 +39,7 @@ struct
     String l3 = "default";
     String l4 = "default";
     String nodes = "default";
-    String cantNodos = "";
+    String cantNodos = "0";
     String statusJSON = "{}";
 } input;
 
@@ -51,9 +55,10 @@ struct
 struct
 {
     String mqttBroker = "";
-    String clientID;
+    String clientID = "";
     String subsTopic = "testTopicAvoid/";
-    String pubTopic;
+    String pubTopic = "";
     String user = "";
-    String password = "";    int port;
+    String password = "";
+    int port = 1883;
 } mqttCredentials;

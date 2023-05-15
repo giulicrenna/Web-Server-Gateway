@@ -41,24 +41,19 @@ public:
     {
         String send[10] = {"", "", "", "", "", "", "", "", "", ""};
         String cmd[5] = {"", "", "", "", ""};
-        #ifdef DEBUG
+
         String str = Serial.readStringUntil('\n');
-        #else
-        String str = Serial.readStringUntil('\n');
-        #endif
 
         std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
-        for(int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());cmd[k].trim();}
+        for(unsigned int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());}
 
         if (cmd[0] != "")
         {
-            #ifdef DEBUG
-            Serial.println("----------------<Incomming Command>----------------");
-            Serial.println(">" + cmd[0]);
-            Serial.println(">" + cmd[1]);
-            Serial.println(">" + cmd[2]);
-            #endif
+            printTest("\n----------------<Incomming Command>----------------");
+            printTest("\n>" + cmd[0]);
+            printTest("\n>" + cmd[1]);
+            printTest("\n>" + cmd[2]);
             if (cmd[0] == command0)
             {
                 if (WiFi.isConnected())
@@ -135,9 +130,7 @@ public:
                 }
                 catch (...)
                 {
-#ifdef DEBUG
-                Serial.println("Could't open data set...");
-#endif
+                    printTest("Could't open data set...");
                 }
             }
             if (cmd[0] == command5)

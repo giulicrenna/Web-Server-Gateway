@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <title>Master Control</title>
 </head>
+
 
 <body>
     <header
@@ -17,109 +18,124 @@
     <main class="container">
         <table>
             <tr>
-                <td style="text-align: center">
-                    <form action="/pub">
-                        <h4>COMANDO</h4>
+                <h4>ESTADO DEL GATEWAY</h4>
 
-                        <div class="grid">
-                            <label for="cmd">
-                                Comando
-                                <input id="cmd" type="text" name="cmd" value="{}"/>
-                            </label>
-                        </div>
+                <div class="grid">
+                    <label for="status">
+                        Status:
+                        <p id="status">%STATUS%</p>
+                    </label>
 
-                        <input  type="submit" value="Enviar">
+                    <label for="nodos">
+                        Tabla de nodos
+                        <p id="nodos">%NODOS%</p>
+                    </label>
 
-                    </form>
-                    <form action="/get">
-                        <h4>ESTADO DEL GATEWAY</h4>
-
-                        <div class="grid">
-                            <label for="status">
-                                Status:
-                                <p id="status">%STATUS%</p>
-                            </label>
-                        </div>
-
-                        <div class=""grid>
-                            <label for="nodos">    
-                                Tabla de nodos
-                                <p id="nodos">%NODOS%</p>
-                            </label>
-                        </div>
-
-                        <h4>CONEXIONES</h4>
-
-                        <div class="grid">
-                            <label for="cbox1">
-                                GPRS
-                                <input id="cbox1" type="checkbox" name="gprs" value="on" />
-                            </label>
-                            <label for="cbox2">
-                                WiFi
-                                <input id="cbox2" type="checkbox" name="wifi" value="on" />
-                            </label>
-                        </div>
-
-                        <h5>Wifi:</h5>
-
-                        <div class="grid">
-                            <label for="ssid">
-                                SSID
-                                <input id="ssid" maxlength="16" name="ssid" required="" size="25" type="text">
-                            </label>
-                            <label for="pass">
-                                Password
-                                <input id="pass" maxlength="16" name="pass" required="" size="25" type="password" />
-                            </label>
-                        </div>
-                        
-                        <h5>GPRS:</h5>
-
-                        <div class="grid">
-                            <label for="apn">
-                                APN
-                                <input id="apn" maxlength="16" name="ssid" required="" size="25" type="text">
-                            </label>
-                        </div>
-
-                        <h4>MQTT server</h4>
-
-                        <div class="grid">
-                            <label for="host">
-                                Host
-                                <input id="host" maxlength="16" name="ssid" required="" size="25" type="text">
-                            </label>
-                            <label for="port">
-                                Puerto
-                                <input id="port" maxlength="16" name="ssid" required="" size="25" type="text">
-                            </label>
-                        </div>
-
-                        <div class=""grid>
-                            <label for="user">
-                                Usuario
-                                <input id="user" maxlength="16" name="ssid" required="" size="25" type="text">
-                            </label>
-                            <label for="pass">
-                                Contraseña
-                                <input id="pass" maxlength="16" name="ssid" required="" size="25" type="password">
-                            </label>
-                        </div>
-
-                        <p id="w0">%W0%</p>
-                        <p id="w1">%W1%</p>
-                        <p id="w2">%W2%</p>
-                        <p id="w3">%W3%</p>
-                        <p id="w4">%W4%</p>
-                        <p id="w5">%W5%</p>
-
-                        <input  type="submit" value="Aceptar">
-                        <tr>
-                </td>
+                    <label for="cantnodos">
+                        Cantidad de nodos
+                        <p id="cantnodos">%CATNODOS%</p>
+                    </label>
+                </div>
             </tr>
-            </tbody>
-            </form>
+
+            <hr>
+
+            <tr>
+                <h4>CONEXIONES</h4>
+                <form action="/aplicar_wifi">
+                    <div class="grid">
+                        <label for="cbox2">
+                            WiFi
+                            <input id="cbox2" type="checkbox" name="wifi" value="on" />
+                        </label>
+                    </div>
+
+                    <div class="grid">
+                        <label for="ssid">
+                            SSID
+                            <input id="ssid" maxlength="16" name="ssid" size="100" type="text">
+                        </label>
+                        <label for="pass">
+                            Password
+                            <input id="pass" maxlength="16" name="pass" size="100" type="password" />
+                        </label>
+                    </div>
+
+                    <input type="submit" value="Aplicar WiFi">
+                </form>
+
+                <hr>
+
+                <form action="/aplicar_gprs">
+                    <div class="grid">
+                        <label for="cbox1">
+                            GPRS
+                            <input id="cbox1" type="checkbox" name="gprs" value="on" />
+                        </label>
+                    </div>
+                    <div class="grid">
+                        <label for="apn">
+                            APN
+                            <input id="apn" maxlength="100" name="apn" size="100" type="text">
+                        </label>
+                    </div>
+
+                    <input type="submit" value="Aplicar GPRS">
+                </form>
+
+                <hr>
+
+                <form action="/aplicar_mqtt">
+                    <h4>MQTT server</h4>
+                    <div class="grid">
+                        <label for="host">
+                            Host
+                            <input id="host" maxlength="100" name="host" required="" size="100" type="text">
+                        </label>
+                        <label for="port">
+                            Puerto
+                            <input id="port" maxlength="100" name="port" required="" size="100" type="text">
+                        </label>
+                    </div>
+
+                    <div class="" grid>
+                        <label for="user">
+                            Usuario
+                            <input id="user" maxlength="100" name="user" size="100" type="text">
+                        </label>
+                        <label for="pass">
+                            Contraseña
+                            <input id="pass" maxlength="100" name="pass" size="100" type="password">
+                        </label>
+                    </div>
+
+                    <input type="submit" value="Aplicar MQTT">
+                </form>
+
+                <form action="/guardar_salir">
+                    <div class="container">
+                        <input type="submit" value="Guardar y Salir">
+                    </div>
+                </form>
+
+                <hr>
+            </tr>
+
+            <tr>
+                <form action="/pub">
+                    <h4>COMANDO</h4>
+
+                    <div class="grid">
+                        <label for="cmd">
+                            Comando
+                            <div class="primary">
+                                <input id="cmd" type="text" name="cmd" value="{}" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <input type="submit" value="Enviar">
+                </form>
             </tr>
         </table>
     </main>
@@ -132,22 +148,46 @@
             if (this.readyState == 4 && this.status == 200) {
                 var a = this.responseText.split(';');
 
-                document.getElementById("id_").innerHTML = a[0];
-                document.getElementById("nodos").innerHTML = a[1];
-                document.getElementById("w0").innerHTML = a[2];
-                document.getElementById("w1").innerHTML = a[3];
-                document.getElementById("w2").innerHTML = a[4];
-                document.getElementById("w3").innerHTML = a[5];
-                document.getElementById("w4").innerHTML = a[6];
-                document.getElementById("w5").innerHTML = a[7];
-                document.getElementById("l3_").innerHTML = a[8];
-                document.getElementById("status").innerHTML = a[8];
-                document.getElementById("cantnodos").innerHTML = a[8];
+                document.getElementById("nodos").innerHTML = a[0];
+                document.getElementById("cantnodos").innerHTML = a[1];
+                document.getElementById("status").innerHTML = a[2];
             }
         };
         xhttp.open("GET", "/allvalues", true);
         xhttp.send();
     }, 50);
+
+    function setValues() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var a = this.responseText.split(';');
+
+                document.getElementById("ssid").value = data[3];
+                document.getElementById("pass").value = data[4];
+                document.getElementById("apn").value = data[5];
+                document.getElementById("host").value = data[6];
+                document.getElementById("port").value = data[7];
+                document.getElementById("user").value = data[8];
+                document.getElementById("pass").value = data[9];
+
+            }
+        };
+        xhttp.open("GET", "/allvalues", true);
+        xhttp.send();
+    }
+
+    window.onunload = setValues;
+
 </script>
+
+
+<style>
+    hr {
+        color: rgb(0, 160, 223);
+        border-style: solid;
+        border-width: 4px;
+    }
+</style>
 
 </html>
