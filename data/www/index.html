@@ -5,9 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Master Control</title>
-</head>
 
+    <title>Master Control</title>
+
+    <script src="script.js"></script>
+    <script>
+        setInterval(function () {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var a = this.responseText.split(';');
+
+                    document.getElementById("nodos").innerHTML = a[0];
+                    document.getElementById("cantnodos").innerHTML = a[1];
+                    document.getElementById("status").innerHTML = a[2];
+                }
+            };
+            xhttp.open("GET", "/allvalues", true);
+            xhttp.send();
+        }, 50);
+
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                // Get the form data
+                var formData = $(this).serialize();
+
+                // Perform the AJAX request
+                $.ajax({
+                    type: 'GET', // or 'GET' depending on your form's method
+                    url: $(this).attr('action'),
+                    data: formData,
+                    success: function (response) {
+                        // Handle the success response here
+                        console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle the error response here
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
 
 <body>
     <header
@@ -42,22 +84,17 @@
 
             <tr>
                 <h4>CONEXIONES</h4>
+
                 <form action="/aplicar_wifi">
-                    <div class="grid">
-                        <label for="cbox2">
-                            WiFi
-                            <input id="cbox2" type="checkbox" name="wifi" value="on" />
-                        </label>
-                    </div>
 
                     <div class="grid">
                         <label for="ssid">
                             SSID
-                            <input id="ssid" maxlength="16" name="ssid" size="100" type="text">
+                            <input id="ssid" maxlength="100" name="ssid" size="100" type="text">
                         </label>
                         <label for="pass">
                             Password
-                            <input id="pass" maxlength="16" name="pass" size="100" type="password" />
+                            <input id="pass" maxlength="100" name="pass" size="100" type="password" />
                         </label>
                     </div>
 
@@ -67,12 +104,7 @@
                 <hr>
 
                 <form action="/aplicar_gprs">
-                    <div class="grid">
-                        <label for="cbox1">
-                            GPRS
-                            <input id="cbox1" type="checkbox" name="gprs" value="on" />
-                        </label>
-                    </div>
+
                     <div class="grid">
                         <label for="apn">
                             APN
@@ -112,10 +144,24 @@
                     <input type="submit" value="Aplicar MQTT">
                 </form>
 
+                <hr>
+
+                <h4>Habilitación final</h4>
+
                 <form action="/guardar_salir">
                     <div class="container">
-                        <input type="submit" value="Guardar y Salir">
+                        <div class="grid">
+                            <label for="cbox1">
+                                GPRS
+                                <input id="cbox1" type="checkbox" name="gprs" value="on" />
+                            </label>
+                            <label for="cbox2">
+                                WiFi
+                                <input id="cbox2" type="checkbox" name="wifi" value="on" />
+                            </label>
+                        </div>
                     </div>
+                    <input type="submit" value="Guardar y Salir">
                 </form>
 
                 <hr>
@@ -123,7 +169,7 @@
 
             <tr>
                 <form action="/pub">
-                    <h4>COMANDO</h4>
+                    <h4>Comando</h4>
 
                     <div class="grid">
                         <label for="cmd">
@@ -141,45 +187,7 @@
     </main>
 </body>
 
-<script>
-    setInterval(function () {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                var a = this.responseText.split(';');
 
-                document.getElementById("nodos").innerHTML = a[0];
-                document.getElementById("cantnodos").innerHTML = a[1];
-                document.getElementById("status").innerHTML = a[2];
-            }
-        };
-        xhttp.open("GET", "/allvalues", true);
-        xhttp.send();
-    }, 50);
-
-    function setValues() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                var a = this.responseText.split(';');
-
-                document.getElementById("ssid").value = data[3];
-                document.getElementById("pass").value = data[4];
-                document.getElementById("apn").value = data[5];
-                document.getElementById("host").value = data[6];
-                document.getElementById("port").value = data[7];
-                document.getElementById("user").value = data[8];
-                document.getElementById("pass").value = data[9];
-
-            }
-        };
-        xhttp.open("GET", "/allvalues", true);
-        xhttp.send();
-    }
-
-    window.onunload = setValues;
-
-</script>
 
 
 <style>

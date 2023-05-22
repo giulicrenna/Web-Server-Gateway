@@ -1,7 +1,8 @@
-#define DEBUG
+//#define DEBUG
 #define isESP8266
 
-const char *ssid = "Darkflow-Lora";
+String ssid_ = "Lora-" + String(ESP.getChipId());
+const char *ssid = ssid_.c_str();
 const char *password = NULL;
 
 int baudrate = 115200;

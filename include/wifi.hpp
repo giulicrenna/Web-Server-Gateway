@@ -27,6 +27,8 @@ public:
     {
         server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/www/style.css", "text/css"); });
+        server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
+                  { request->send(LittleFS, "/www/script.js", "text/javascript"); });
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
                   { request->send(LittleFS, "/www/index.html", "text/html"); });
         server.on("/allvalues", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -45,29 +47,39 @@ public:
 
         server.on("/guardar_salir", HTTP_GET, [](AsyncWebServerRequest *request)
                   {
-                      String gprsState, wifiState;
+                    String gprsState, wifiState, inputMessage;
 
-                      if (config.gprs == "on")
-                      {
-                          gprsState = "1";
-                      }
-                      else
-                      {
-                          gprsState = "0";
-                      }
+                    if (request->hasParam("wifi"))
+                    {
+                        inputMessage = request->getParam("wifi")->value();
+                        config.wifi = inputMessage;
+                    }
+                    if (request->hasParam("gprs"))
+                    {
+                        inputMessage = request->getParam("gprs")->value();
+                        config.gprs = inputMessage;
+                    }
+                    if (config.gprs == "on")
+                    {
+                        gprsState = "1";
+                    }
+                    else
+                    {
+                        gprsState = "0";
+                    }
 
-                      if (config.wifi == "on")
-                      {
-                          wifiState = "1";
-                      }
-                      else
-                      {
-                          wifiState = "0";
-                      }
+                    if (config.wifi == "on")
+                    {
+                        wifiState = "1";
+                    }
+                    else
+                    {
+                        wifiState = "0";
+                    }
 
-                      Serial.print("HABILITACIONES\t" + gprsState + "/" + wifiState + "\r\n");
+                    Serial.print("HABILITACIONES\t" + gprsState + "/" + wifiState + "\r\n");
                     request->send(200, "text/html", "WebServer cerrado."); 
-                      server.end(); });
+                    server.end(); });
 
         server.on("/aplicar_mqtt", HTTP_GET, [](AsyncWebServerRequest *request)
                   {

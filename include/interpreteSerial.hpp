@@ -10,7 +10,7 @@ class Interpretator
 {
 public:
     const char *command0 = "I"; // I send 1 or 0 if im connected -> I send my local IP -> I send the SSID i connected from -> I send the RSSI
-    const char *command1 = "A"; // PIC gives me the broker id -> PIC gives me clientID -> I send o or 1 if the connection was succesfull
+    const char *command1 = "MQTT"; // PIC gives me the broker id -> PIC gives me clientID -> I send o or 1 if the connection was succesfull
     const char *command2 = "S"; // PIC send topic where to subscribe
     const char *command3 = "P"; // PIC send topic where to publish -> payload -> 1/0
     const char *command4 = "Q"; // I send recursively the messages
@@ -46,7 +46,7 @@ public:
 
         std::vector<std::string> cmd_v = mstd::strip(str.c_str(), '\t');
 
-        for(unsigned int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());}
+        for(unsigned int k=0; k < cmd_v.size(); k++){cmd[k] = String(cmd_v.at(k).c_str());cmd[k].trim();}
 
         if (cmd[0] != "")
         {
@@ -74,9 +74,10 @@ public:
             if (cmd[0] == command1)
             {
                 mqttCredentials.mqttBroker = cmd[1];
-                mqttCredentials.clientID = cmd[2];
-                mqttCredentials.port = std::stoi(cmd[3].c_str());
-                if (mqttSetup(cmd[1], mqttCredentials.port) == 1)
+                mqttCredentials.port = std::stoi(cmd[2].c_str());
+                mqttCredentials.user = cmd[3];
+                mqttCredentials.password = cmd[4];
+                if (mqttSetup(mqttCredentials.mqttBroker, mqttCredentials.port) == 1)
                 {
                     send[0] = "1";
                 }
@@ -135,6 +136,7 @@ public:
             }
             if (cmd[0] == command5)
             {
+                return;
                 String data;
                 if (config.gprs == "on")
                 {
@@ -180,6 +182,7 @@ public:
                     WiFiSetter::setupWifiSta();
                     if(WiFi.isConnected()){
                         currentState = START_INTERPRETATOR_LOCAL_SERVER;
+                        printTest("\nSTART_INTERPRETATOR");
                         send[0] = "1";
                     }else{
                         send[0] = "0";

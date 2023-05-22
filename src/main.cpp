@@ -20,9 +20,8 @@ N\tNodo987889f89b7982b7897b298f89en7f98e2\r\n
 M\t2\r\n
 
 STATUS\t{"Status":"ok"}
-
-
 */
+
 Interpretator myInterprete;
 
 void task1()
@@ -72,7 +71,7 @@ void task1()
         if(!WiFi.isConnected()){
            currentState = START_AP; 
         }
-        printTest("\nSTART_INTERPRETATOR");
+        
         mqttClient.poll();
         break;
     }
