@@ -31,6 +31,8 @@ void onMqttMessage(int messageSize)
     {
         newContent += (char)mqttClient.read();
     }
+    mqttCredentials.lastTopic = topic;
+    mqttCredentials.lastMessage = newContent;
     topics_.manageDataSet(topic.c_str());
     myMessages_.manageDataSet(newContent.c_str());
 }

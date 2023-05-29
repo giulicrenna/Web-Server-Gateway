@@ -61,5 +61,7 @@ struct
     String pubTopic = "";
     String user = "";
     String password = "";
+    String lastMessage = "";
+    String lastTopic = "";
     int port = 1883;
 } mqttCredentials;

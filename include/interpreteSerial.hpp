@@ -121,6 +121,18 @@ public:
                     topics = topics_.giveDataSet();
                     messages = myMessages_.giveDataSet();
 
+                    if(mqttCredentials.lastMessage == ""){
+                        Serial.print("0\r\n");
+                        return;
+                    }else{
+                        Serial.print("1\r\n");
+                        Serial.print(mqttCredentials.lastTopic);
+                        delay(10);
+                        Serial.print(mqttCredentials.lastMessage);
+                        delay(10);
+                        mqttCredentials.lastMessage = "";
+                        return;
+                    }
                     for (int i = 0; i < mQueueSize; i += 1)
                     {
                         String messagesStr = topics.at(i).c_str();
