@@ -1,2 +1,4 @@
-# Lora-Dashboard
+# Web Server Gateway
+
+**ESP32 Web Server Gateway** is a versatile gateway solution built on the ESP32 platform, specifically tailored for bridging communication between IoT devices and web applications. By leveraging the capabilities of the ESP32 microcontroller and its integrated Wi-Fi connectivity, the Web Server Gateway enables seamless integration of IoT devices into web-based ecosystems. With support for HTTP and WebSocket protocols, the gateway facilitates bidirectional communication, allowing IoT devices to interact with web services in real-time. Additionally, the Web Server Gateway offers features such as secure authentication, data encryption, and remote device management, ensuring the confidentiality, integrity, and availability of IoT data in transit. Whether deploying smart home systems, industrial automation solutions, or remote monitoring applications, the ESP32 Web Server Gateway provides a robust and scalable foundation for building interconnected IoT ecosystems.
  
